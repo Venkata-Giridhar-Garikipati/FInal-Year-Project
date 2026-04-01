@@ -1,4 +1,5 @@
-# 🏛️ PM Internship Scheme Portal
+# 🏛️ AI-Powered Internship Recommendation & Management Platform
+
 
 A full-stack Django web application for the **PM Government Internship Scheme** with 3 separate Django apps — Student Portal, Mentor Portal, and Admin Portal.
 
