@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In — CareerAI{% endblock %}
+
+{% block header_nav %}
+<nav class="flex items-center gap-1">
+    <a href="{% url 'home' %}" class="nav-link active px-3 py-1.5 text-sm font-medium text-white">Home</a>
+    <a href="{% url 'about' %}" class="nav-link px-3 py-1.5 text-sm font-medium text-muted hover:text-light transition">About</a>
+    <a href="{% url 'mentor_login' %}" class="nav-link px-3 py-1.5 text-sm font-medium text-muted hover:text-light transition">Mentors</a>
+    <a href="{% url 'admin_login' %}" class="nav-link px-3 py-1.5 text-sm font-medium text-muted hover:text-light transition">Admin</a>
+</nav>
+<div class="flex items-center gap-2">
+    <a href="{% url 'student_login' %}" class="px-4 py-1.5 text-sm font-medium text-light border border-surface-4 rounded-lg hover:border-brand/50 hover:text-white transition">Sign In</a>
+    <a href="{% url 'register' %}" class="px-4 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-brand to-brand-dark rounded-lg hover:opacity-90 transition shadow-glow-blue">Get Started</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-surface hero-grid flex items-center justify-center py-14 px-4 relative">
+    <!-- Ambient glows -->
+    <div class="absolute top-10 right-1/4 w-72 h-72 bg-brand/8 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-10 left-1/4 w-60 h-60 bg-accent/6 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="w-full max-w-md relative">
+
+        <!-- Back link -->
+        <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-muted text-sm hover:text-light mb-6 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            Back to Home
+        </a>
+
+        <div class="glass-card rounded-2xl overflow-hidden shadow-card fade-up">
+            <!-- Card Header -->
+            <div class="relative bg-gradient-to-br from-surface-3 to-surface-4 px-8 py-7 border-b border-surface-4 overflow-hidden">
+                <div class="absolute -top-6 -right-6 w-28 h-28 bg-accent/8 rounded-full blur-2xl"></div>
+                <div class="relative flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-brand to-accent flex items-center justify-center shadow-glow-blue shrink-0">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="font-display font-bold text-white text-xl">Student Sign In</h2>
+                        <p class="text-muted text-xs mt-0.5">Welcome back — your career insights await</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="px-8 py-7">
+                <form method="POST" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-muted mb-2 uppercase tracking-wider">Email Address</label>
+                        <input type="email" name="email" required placeholder="you@example.com"
+                            value="{{ request.POST.email }}"
+                            class="w-full bg-surface-3 border border-surface-4 rounded-xl px-4 py-2.5 text-sm text-light placeholder-muted/50 focus:outline-none focus:border-brand/60 focus:ring-1 focus:ring-brand/40 transition">
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-xs font-semibold text-muted uppercase tracking-wider">Password</label>
+                            <a href="#" class="text-xs text-brand hover:text-light transition">Forgot password?</a>
+                        </div>
+                        <input type="password" name="password" required placeholder="Enter your password"
+                            class="w-full bg-surface-3 border border-surface-4 rounded-xl px-4 py-2.5 text-sm text-light placeholder-muted/50 focus:outline-none focus:border-brand/60 focus:ring-1 focus:ring-brand/40 transition">
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-gradient-to-r from-brand to-brand-dark text-white font-semibold py-3 rounded-xl hover:opacity-90 transition text-sm shadow-glow-blue">
+                        Sign In to Dashboard
+                    </button>
+                </form>
+
+                <p class="text-center text-xs text-muted mt-5">
+                    Don't have an account?
+                    <a href="{% url 'register' %}" class="text-brand hover:text-light font-semibold transition">Create one free</a>
+                </p>
+
+                <!-- Divider -->
+                <div class="border-t border-surface-4 mt-6 pt-5">
+                    <p class="text-center text-xs text-muted mb-3">Other portals</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="{% url 'mentor_login' %}" class="flex items-center justify-center gap-2 bg-surface-3 border border-surface-4 rounded-xl py-2 text-xs text-muted hover:text-accent hover:border-accent/30 transition font-medium">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            Mentor Portal
+                        </a>
+                        <a href="{% url 'admin_login' %}" class="flex items-center justify-center gap-2 bg-surface-3 border border-surface-4 rounded-xl py-2 text-xs text-muted hover:text-brand hover:border-brand/30 transition font-medium">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            Admin Portal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trust bar -->
+        <div class="mt-6 flex items-center justify-center gap-6 text-xs text-muted/60 fade-up-2">
+            <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                256-bit Encrypted
+            </span>
+            <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                Privacy First
+            </span>
+        </div>
+    </div>
+</div>
+{% endblock %}

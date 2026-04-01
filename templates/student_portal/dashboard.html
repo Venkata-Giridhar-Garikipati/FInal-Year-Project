@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — CareerAI{% endblock %}
+
+{% block header_nav %}
+{# ——— Student App Nav ——— #}
+<div class="flex items-center gap-1 overflow-x-auto scrollbar-hide">
+  {% with active="dashboard" %}
+  <a href="{% url 'student_dashboard' %}"   class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition {% if active == 'dashboard' %}bg-brand/15 text-brand border border-brand/25{% else %}text-muted hover:text-light hover:bg-surface-3{% endif %}">Dashboard</a>
+  <a href="{% url 'prediction' %}"           class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Prediction</a>
+  <a href="{% url 'view_internships' %}"     class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Internships</a>
+  <a href="{% url 'application_status' %}"   class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Applications</a>
+  <a href="{% url 'learn_classes' %}"        class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Classes</a>
+  <a href="{% url 'my_profile' %}"           class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Profile</a>
+  <a href="{% url 'submit_feedback' %}"      class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Feedback</a>
+  <a href="{% url 'student_mentor_list' %}"      class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Mentor Chat</a>
+  <a href="{% url 'chatbot' %}"      class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Chatbot</a>
+  {% endwith %}
+</div>
+<div class="flex items-center gap-3 ml-2 shrink-0">
+  <span class="hidden md:flex items-center gap-1.5 text-xs text-muted">
+    <span class="w-6 h-6 rounded-full bg-gradient-to-br from-brand to-accent flex items-center justify-center text-white text-xs font-bold">{{ request.user.full_name|first|upper }}</span>
+    {{ request.user.full_name }}
+  </span>
+  <a href="{% url 'student_logout' %}" class="px-3 py-1.5 text-xs font-semibold text-red-400 border border-red-900/50 rounded-lg hover:bg-red-950/40 transition whitespace-nowrap">Sign Out</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-8">
+
+  {# ——— Welcome Hero ——— #}
+  <div class="relative bg-gradient-to-br from-surface-3 via-surface-2 to-surface-3 border border-surface-4 rounded-2xl p-7 mb-7 overflow-hidden">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-brand/6 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-1/3 w-48 h-48 bg-accent/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="relative flex items-center justify-between flex-wrap gap-5">
+      <div>
+        <p class="text-muted text-xs uppercase tracking-widest mb-1">Welcome back</p>
+        <h2 class="font-display font-extrabold text-3xl text-white">{{ request.user.full_name }}</h2>
+        <p class="text-muted text-sm mt-1">{{ request.user.email }}</p>
+        <div class="flex gap-2 mt-4 flex-wrap">
+          <span class="inline-flex items-center gap-1.5 bg-brand/15 border border-brand/25 text-brand text-xs font-semibold px-3 py-1 rounded-full">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
+            Student
+          </span>
+          <span class="inline-flex items-center gap-1.5 bg-surface-4 border border-surface-4 text-muted text-xs font-medium px-3 py-1 rounded-full">
+            Joined {{ request.user.date_joined|date:"M Y" }}
+          </span>
+        </div>
+      </div>
+      <div class="hidden md:flex w-20 h-20 rounded-2xl bg-gradient-to-br from-brand to-accent items-center justify-center text-white text-4xl font-display font-extrabold shadow-glow-blue">
+        {{ request.user.full_name|first|upper }}
+      </div>
+    </div>
+  </div>
+
+  {# ——— Stats Grid ——— #}
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-7">
+    {% for stat in stats_list %}
+    {# rendered dynamically below via the six blocks #}
+    {% endfor %}
+
+    <div class="glass-card rounded-xl p-4 text-center hover:border-brand/30 transition">
+      <p class="font-display font-extrabold text-2xl text-white">{{ total_internships }}</p>
+      <p class="text-muted text-xs mt-1 leading-tight">Open<br>Internships</p>
+    </div>
+    <div class="glass-card rounded-xl p-4 text-center hover:border-brand/30 transition">
+      <p class="font-display font-extrabold text-2xl text-brand">{{ total_applied }}</p>
+      <p class="text-muted text-xs mt-1 leading-tight">My<br>Applications</p>
+    </div>
+    <div class="glass-card rounded-xl p-4 text-center hover:border-yellow-500/30 transition">
+      <p class="font-display font-extrabold text-2xl text-yellow-400">{{ pending }}</p>
+      <p class="text-muted text-xs mt-1 leading-tight">Pending<br>Review</p>
+    </div>
+    <div class="glass-card rounded-xl p-4 text-center hover:border-accent/30 transition">
+      <p class="font-display font-extrabold text-2xl text-accent">{{ approved }}</p>
+      <p class="text-muted text-xs mt-1 leading-tight">Approved<br>Applications</p>
+    </div>
+    <div class="glass-card rounded-xl p-4 text-center hover:border-red-500/30 transition">
+      <p class="font-display font-extrabold text-2xl text-red-400">{{ rejected }}</p>
+      <p class="text-muted text-xs mt-1 leading-tight">Rejected<br>Applications</p>
+    </div>
+    <div class="glass-card rounded-xl p-4 text-center hover:border-accent/30 transition">
+      <p class="font-display font-extrabold text-2xl text-accent">{{ total_classes }}</p>
+      <p class="text-muted text-xs mt-1 leading-tight">Available<br>Classes</p>
+    </div>
+  </div>
+
+  {# ——— Quick Actions ——— #}
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-7">
+    <a href="{% url 'view_internships' %}" class="glass-card rounded-xl p-5 hover:border-brand/35 hover:shadow-glow-blue transition group text-center">
+      <div class="w-10 h-10 rounded-xl bg-brand/15 border border-brand/20 flex items-center justify-center mx-auto mb-3 group-hover:bg-brand/25 transition">
+        <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      </div>
+      <div class="font-display font-semibold text-white text-sm group-hover:text-brand transition">Browse Internships</div>
+      <div class="text-muted text-xs mt-1">{{ total_internships }} available</div>
+    </a>
+    <a href="{% url 'application_status' %}" class="glass-card rounded-xl p-5 hover:border-accent/35 transition group text-center">
+      <div class="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-3 group-hover:bg-accent/20 transition">
+        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      </div>
+      <div class="font-display font-semibold text-white text-sm group-hover:text-accent transition">My Applications</div>
+      <div class="text-muted text-xs mt-1">{{ total_applied }} submitted</div>
+    </a>
+    <a href="{% url 'learn_classes' %}" class="glass-card rounded-xl p-5 hover:border-brand/35 transition group text-center">
+      <div class="w-10 h-10 rounded-xl bg-brand/15 border border-brand/20 flex items-center justify-center mx-auto mb-3 group-hover:bg-brand/25 transition">
+        <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      </div>
+      <div class="font-display font-semibold text-white text-sm group-hover:text-brand transition">Learn Classes</div>
+      <div class="text-muted text-xs mt-1">{{ total_classes }} classes</div>
+    </a>
+    <a href="{% url 'prediction' %}" class="glass-card rounded-xl p-5 hover:border-accent/35 hover:shadow-glow-teal transition group text-center">
+      <div class="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-3 group-hover:bg-accent/20 transition">
+        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2"/></svg>
+      </div>
+      <div class="font-display font-semibold text-white text-sm group-hover:text-accent transition">AI Prediction</div>
+      <div class="text-muted text-xs mt-1">Get recommendations</div>
+    </a>
+  </div>
+
+  {# ——— Two-column: Recent Applications + Profile ——— #}
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-7">
+
+    {# Recent Applications #}
+    <div class="glass-card rounded-2xl overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-surface-4">
+        <h3 class="font-display font-semibold text-white text-sm">Recent Applications</h3>
+        <a href="{% url 'application_status' %}" class="text-xs text-brand hover:text-light transition font-medium flex items-center gap-1">
+          View All <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      {% if recent_apps %}
+      <div class="divide-y divide-surface-4">
+        {% for app in recent_apps %}
+        <div class="px-5 py-4 flex items-center justify-between gap-3 hover:bg-surface-3/50 transition">
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-light text-sm truncate">{{ app.internship.title }}</p>
+            <p class="text-muted text-xs mt-0.5">{{ app.internship.company_name }} · {{ app.applied_at|date:"d M Y" }}</p>
+          </div>
+          {% if app.status == 'approved' %}
+            <span class="bg-accent/15 border border-accent/25 text-accent text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">Approved</span>
+          {% elif app.status == 'rejected' %}
+            <span class="bg-red-500/15 border border-red-500/25 text-red-400 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">Rejected</span>
+          {% else %}
+            <span class="bg-yellow-500/15 border border-yellow-500/25 text-yellow-400 text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap">Pending</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="px-5 py-12 text-center">
+        <div class="w-12 h-12 rounded-xl bg-surface-3 border border-surface-4 flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+        </div>
+        <p class="text-muted text-sm font-medium">No applications yet</p>
+        <a href="{% url 'view_internships' %}" class="text-brand text-xs hover:text-light mt-1.5 inline-flex items-center gap-1 transition">
+          Browse internships <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+    {# Profile Card #}
+    <div class="glass-card rounded-2xl overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-surface-4">
+        <h3 class="font-display font-semibold text-white text-sm">My Profile</h3>
+        <a href="{% url 'my_profile' %}" class="text-xs text-brand hover:text-light transition font-medium flex items-center gap-1">
+          Edit <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="p-5">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand to-accent flex items-center justify-center text-white text-xl font-display font-bold shadow-glow-blue shrink-0">
+            {{ request.user.full_name|first|upper }}
+          </div>
+          <div>
+            <p class="font-display font-bold text-white">{{ request.user.full_name }}</p>
+            <p class="text-muted text-xs mt-0.5">{{ request.user.email }}</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-surface-3 border border-surface-4 rounded-xl p-3">
+            <p class="text-muted text-xs uppercase tracking-wider mb-1.5">Account Type</p>
+            <span class="inline-flex items-center gap-1.5 bg-brand/15 border border-brand/25 text-brand text-xs font-semibold px-2.5 py-0.5 rounded-full">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
+              Student
+            </span>
+          </div>
+          <div class="bg-surface-3 border border-surface-4 rounded-xl p-3">
+            <p class="text-muted text-xs uppercase tracking-wider mb-1.5">Member Since</p>
+            <p class="text-light text-sm font-semibold">{{ request.user.date_joined|date:"d M Y" }}</p>
+          </div>
+          <div class="bg-surface-3 border border-surface-4 rounded-xl p-3 col-span-2">
+            <p class="text-muted text-xs uppercase tracking-wider mb-1.5">Application Summary</p>
+            <div class="flex gap-3">
+              <span class="text-yellow-400 text-xs font-bold">{{ pending }} Pending</span>
+              <span class="text-accent text-xs font-bold">{{ approved }} Approved</span>
+              <span class="text-red-400 text-xs font-bold">{{ rejected }} Rejected</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ——— Info Banner ——— #}
+  <div class="relative bg-gradient-to-br from-surface-3 to-surface-2 border border-surface-4 rounded-2xl p-6 overflow-hidden">
+    <div class="absolute top-0 right-0 w-48 h-48 bg-brand/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="flex items-center gap-2 mb-4">
+      <div class="w-7 h-7 rounded-lg bg-accent/15 border border-accent/25 flex items-center justify-center">
+        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <h3 class="font-display font-semibold text-white text-sm">Platform Highlights</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-muted">
+      <div class="flex items-start gap-2"><span class="text-accent mt-0.5">▸</span><span>AI-driven job role predictions based on your uploaded resume and skill set.</span></div>
+      <div class="flex items-start gap-2"><span class="text-accent mt-0.5">▸</span><span>Skill gap analysis identifying missing competencies for your target roles.</span></div>
+      <div class="flex items-start gap-2"><span class="text-accent mt-0.5">▸</span><span>Mentor-guided internship program with real industry exposure and feedback.</span></div>
+      <div class="flex items-start gap-2"><span class="text-accent mt-0.5">▸</span><span>Verified completion certificate issued upon successful program completion.</span></div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

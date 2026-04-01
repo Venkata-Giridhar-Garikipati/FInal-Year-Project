@@ -1,0 +1,298 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Connect with Mentors</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #151820;
+    --card: #1c2030;
+    --card-hover: #232840;
+    --blue: #3b82f6;
+    --blue-glow: rgba(59,130,246,0.15);
+    --blue-soft: rgba(59,130,246,0.08);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --border: rgba(255,255,255,0.06);
+    --badge: #2563eb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Animated bg dots */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: radial-gradient(circle at 20% 20%, rgba(59,130,246,0.05) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, rgba(99,102,241,0.04) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .top-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(10px);
+  }
+  .top-bar .brand {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+  .top-bar .brand span { color: var(--blue); }
+  .user-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--blue-soft);
+    border: 1px solid rgba(59,130,246,0.2);
+    padding: 5px 14px 5px 8px;
+    border-radius: 99px;
+    font-size: 0.82rem; font-weight: 500;
+  }
+  .user-pill .avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700;
+    color: #fff;
+  }
+
+  .page-wrap { max-width: 780px; margin: 0 auto; padding: 40px 24px 60px; }
+
+  .page-header {
+    margin-bottom: 36px;
+  }
+  .page-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem; font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+  .page-header h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, #3b82f6, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .page-header p {
+    color: var(--muted); font-size: 0.93rem; margin-top: 8px;
+  }
+
+  .search-bar {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0 16px;
+    margin-bottom: 24px;
+    transition: border-color 0.2s;
+  }
+  .search-bar:focus-within { border-color: rgba(59,130,246,0.4); }
+  .search-bar svg { color: var(--muted); flex-shrink: 0; }
+  .search-bar input {
+    flex: 1; background: none; border: none; outline: none;
+    padding: 13px 0; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+  }
+  .search-bar input::placeholder { color: var(--muted); }
+
+  .section-label {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .mentor-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .mentor-card {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    text-decoration: none; color: inherit;
+    transition: background 0.18s, border-color 0.18s, transform 0.15s;
+    position: relative; overflow: hidden;
+  }
+  .mentor-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--blue);
+    transform: scaleY(0);
+    transition: transform 0.2s;
+    border-radius: 0 2px 2px 0;
+  }
+  .mentor-card:hover {
+    background: var(--card-hover);
+    border-color: rgba(59,130,246,0.25);
+    transform: translateX(3px);
+  }
+  .mentor-card:hover::before { transform: scaleY(1); }
+  .mentor-card.has-unread {
+    border-color: rgba(59,130,246,0.3);
+    background: linear-gradient(135deg, var(--card), rgba(59,130,246,0.04));
+  }
+
+  .mentor-avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: linear-gradient(135deg, #1d4ed8, #4338ca);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+    color: #fff; flex-shrink: 0; position: relative;
+  }
+  .mentor-avatar .online-dot {
+    position: absolute; bottom: 1px; right: 1px;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: #22c55e;
+    border: 2px solid var(--card);
+  }
+
+  .mentor-info { flex: 1; min-width: 0; }
+  .mentor-info .name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mentor-info .preview {
+    font-size: 0.82rem; color: var(--muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+  .mentor-info .preview.unread-preview { color: var(--text); font-weight: 500; }
+
+  .mentor-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+  .mentor-meta .time { font-size: 0.75rem; color: var(--muted); }
+  .unread-badge {
+    background: var(--badge);
+    color: #fff;
+    font-size: 0.72rem; font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    padding: 2px 7px;
+    border-radius: 99px;
+    min-width: 22px; text-align: center;
+    box-shadow: 0 0 12px rgba(59,130,246,0.5);
+    animation: pulse-badge 2s ease-in-out infinite;
+  }
+  @keyframes pulse-badge {
+    0%, 100% { box-shadow: 0 0 8px rgba(59,130,246,0.4); }
+    50%       { box-shadow: 0 0 18px rgba(59,130,246,0.7); }
+  }
+
+  .arrow-icon { color: var(--muted); opacity: 0; transition: opacity 0.2s, transform 0.2s; }
+  .mentor-card:hover .arrow-icon { opacity: 1; transform: translateX(3px); }
+
+  .empty-state {
+    text-align: center; padding: 60px 24px;
+    color: var(--muted); font-size: 0.9rem;
+  }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="brand">Intern<span>Connect</span></div>
+  <div class="user-pill">
+    <div class="avatar">{{ request.user.full_name|slice:":1"|upper }}</div>
+    {{ request.user.full_name }}
+    <a href="{% url 'student_dashboard' %}" 
+   style="
+        display:inline-block;
+        padding:12px 24px;
+        font-size:16px;
+        font-weight:600;
+        text-decoration:none;
+        color:#ffffff;
+        background:linear-gradient(135deg,#1f1f1f,#2c2c2c);
+        border:1px solid #3a3a3a;
+        border-radius:8px;
+        box-shadow:0 4px 12px rgba(0,0,0,0.6);
+        transition:all 0.3s ease;
+   "
+   onmouseover="this.style.background='linear-gradient(135deg,#2c2c2c,#3a3a3a)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px rgba(0,0,0,0.8)';"
+   onmouseout="this.style.background='linear-gradient(135deg,#1f1f1f,#2c2c2c)';this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.6)';"
+>
+   Student Dashboard
+</a>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <h1>Your <em>Mentors</em></h1>
+    <p>Ask questions, get guidance, and grow with expert mentors.</p>
+  </div>
+
+  <div class="search-bar">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Search mentors…" />
+  </div>
+
+  <div class="section-label">All Mentors — {{ mentors|length }} available</div>
+
+  <div class="mentor-list" id="mentorList">
+    {% for item in mentors %}
+    <a href="{% url 'student_chat' item.user.id %}" class="mentor-card {% if item.unread %}has-unread{% endif %}" data-name="{{ item.user.full_name|lower }}">
+      <div class="mentor-avatar">
+        {{ item.user.full_name|slice:":1"|upper }}
+        <div class="online-dot"></div>
+      </div>
+      <div class="mentor-info">
+        <div class="name">{{ item.user.full_name }}</div>
+        <div class="preview {% if item.unread %}unread-preview{% endif %}">
+          {% if item.last_message %}
+            {% if item.last_message.sender == request.user %}You: {% endif %}{{ item.last_message.content|truncatechars:50 }}
+          {% else %}
+            Click to start a conversation
+          {% endif %}
+        </div>
+      </div>
+      <div class="mentor-meta">
+        {% if item.last_message %}
+        <span class="time">{{ item.last_message.created_at|timesince|truncatewords:2 }} ago</span>
+        {% endif %}
+        {% if item.unread %}
+        <span class="unread-badge">{{ item.unread }}</span>
+        {% endif %}
+      </div>
+      <svg class="arrow-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </a>
+    {% empty %}
+    <div class="empty-state">
+      <div class="icon">🧑‍🏫</div>
+      <p>No mentors available yet.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.getElementById('searchInput').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('.mentor-card').forEach(card => {
+      card.style.display = card.dataset.name.includes(q) ? '' : 'none';
+    });
+  });
+</script>
+</body>
+</html>

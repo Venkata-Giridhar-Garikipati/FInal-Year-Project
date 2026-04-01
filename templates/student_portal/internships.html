@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% block title %}Internships — CareerAI{% endblock %}
+
+{% block header_nav %}
+<div class="flex items-center gap-1 overflow-x-auto scrollbar-hide">
+  {% with active="dashboard" %}
+  <a href="{% url 'student_dashboard' %}"   class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition {% if active == 'dashboard' %}bg-brand/15 text-brand border border-brand/25{% else %}text-muted hover:text-light hover:bg-surface-3{% endif %}">Dashboard</a>
+  <a href="{% url 'prediction' %}"           class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Prediction</a>
+  <a href="{% url 'view_internships' %}"     class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Internships</a>
+  <a href="{% url 'application_status' %}"   class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Applications</a>
+  <a href="{% url 'learn_classes' %}"        class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Classes</a>
+  <a href="{% url 'my_profile' %}"           class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Profile</a>
+  <a href="{% url 'submit_feedback' %}"      class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Feedback</a>
+  <a href="{% url 'student_mentor_list' %}"      class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Mentor Chat</a>
+  <a href="{% url 'chatbot' %}"      class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Chatbot</a>
+  {% endwith %}
+</div>
+<div class="flex items-center gap-3 ml-2 shrink-0">
+  <span class="hidden md:flex items-center gap-1.5 text-xs text-muted">
+    <span class="w-6 h-6 rounded-full bg-gradient-to-br from-brand to-accent flex items-center justify-center text-white text-xs font-bold">{{ request.user.full_name|first|upper }}</span>
+    {{ request.user.full_name }}
+  </span>
+  <a href="{% url 'student_logout' %}" class="px-3 py-1.5 text-xs font-semibold text-red-400 border border-red-900/50 rounded-lg hover:bg-red-950/40 transition whitespace-nowrap">Sign Out</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-8">
+
+  {# ——— Header ——— #}
+  <div class="flex items-center gap-2 mb-2">
+    <a href="{% url 'student_dashboard' %}" class="text-muted hover:text-light text-xs transition flex items-center gap-1">
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      Dashboard
+    </a>
+    <svg class="w-3 h-3 text-surface-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+    <span class="text-muted text-xs">Internships</span>
+  </div>
+  <div class="flex items-center justify-between mb-7 flex-wrap gap-3">
+    <div>
+      <h2 class="font-display font-extrabold text-2xl text-white">Available Internships</h2>
+      <p class="text-muted text-sm mt-1">
+        <span class="text-brand font-semibold">{{ total_internships }}</span> internship{{ total_internships|pluralize }} open
+        <span class="text-surface-4 mx-1">·</span>
+        <span class="text-accent font-semibold">{{ total_applied }}</span> applied by you
+      </p>
+    </div>
+    <a href="{% url 'application_status' %}" class="inline-flex items-center gap-2 bg-surface-3 border border-surface-4 text-muted text-xs font-medium px-4 py-2 rounded-xl hover:border-brand/40 hover:text-light transition">
+      My Applications
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+  {# ——— Internships List ——— #}
+  {% if internships %}
+  <div class="space-y-5">
+    {% for internship in internships %}
+    <div class="glass-card rounded-2xl overflow-hidden group hover:border-brand/25 transition">
+
+      {# Accent strip #}
+      <div class="h-0.5 w-full bg-gradient-to-r from-brand via-accent to-brand opacity-50 group-hover:opacity-100 transition"></div>
+
+      <div class="p-6">
+
+        {# Header Row #}
+        <div class="flex items-start justify-between gap-4 flex-wrap mb-5">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2.5 flex-wrap mb-1">
+              <h3 class="font-display font-bold text-white text-lg">{{ internship.title }}</h3>
+              {% if internship.is_active %}
+              <span class="inline-flex items-center gap-1 bg-accent/10 border border-accent/25 text-accent text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-accent pulse-dot"></span>
+                Active
+              </span>
+              {% endif %}
+            </div>
+            <p class="text-brand text-sm font-semibold">{{ internship.company_name }}</p>
+            <div class="flex flex-wrap gap-3 mt-2.5 text-xs text-muted">
+              {% if internship.location %}
+              <span class="flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                {{ internship.location }}
+              </span>
+              {% endif %}
+              {% if internship.get_mode_display %}
+              <span class="flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/></svg>
+                {{ internship.get_mode_display }}
+              </span>
+              {% endif %}
+              {% if internship.get_sector_display %}
+              <span class="flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10"/></svg>
+                {{ internship.get_sector_display }}
+              </span>
+              {% endif %}
+              <span class="flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Posted {{ internship.created_at|date:"d M Y" }}
+              </span>
+            </div>
+          </div>
+
+          {# Apply CTA #}
+          <div class="shrink-0 text-right">
+            {% if internship.id in applied_ids %}
+            <div class="flex flex-col items-end gap-1.5">
+              <span class="inline-flex items-center gap-1.5 bg-accent/10 border border-accent/25 text-accent text-xs font-bold px-4 py-2 rounded-xl">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Applied
+              </span>
+              <a href="{% url 'application_status' %}" class="text-xs text-brand hover:text-light transition">Check status →</a>
+            </div>
+            {% else %}
+            <div class="flex flex-col items-end gap-1.5">
+              <a href="{% url 'apply_internship' internship.pk %}"
+                class="inline-flex items-center gap-2 bg-gradient-to-r from-brand to-brand-dark text-white text-sm font-bold px-5 py-2.5 rounded-xl hover:opacity-90 transition shadow-glow-blue">
+                Apply Now
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+              </a>
+              {% if internship.last_date_to_apply %}
+              <p class="text-xs text-red-400">Deadline: {{ internship.last_date_to_apply|date:"d M Y" }}</p>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        {# Key Metrics #}
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-5">
+          <div class="bg-surface-3 border border-surface-4 rounded-xl px-3 py-2.5 text-center">
+            <p class="text-muted text-xs mb-1">Monthly Stipend</p>
+            <p class="font-display font-bold text-brand text-sm">₹{{ internship.stipend_amount|default:"5,000" }}/mo</p>
+          </div>
+          <div class="bg-surface-3 border border-surface-4 rounded-xl px-3 py-2.5 text-center">
+            <p class="text-muted text-xs mb-1">Duration</p>
+            <p class="font-display font-bold text-white text-sm">{{ internship.get_duration_display }}</p>
+          </div>
+          <div class="bg-surface-3 border border-surface-4 rounded-xl px-3 py-2.5 text-center">
+            <p class="text-muted text-xs mb-1">Openings</p>
+            <p class="font-display font-bold text-white text-sm">{{ internship.openings }} seat{{ internship.openings|pluralize }}</p>
+          </div>
+          <div class="bg-surface-3 border border-surface-4 rounded-xl px-3 py-2.5 text-center">
+            <p class="text-muted text-xs mb-1">Qualification</p>
+            <p class="font-display font-bold text-white text-sm">{{ internship.get_qualification_required_display }}</p>
+          </div>
+        </div>
+
+        {# Description #}
+        <p class="text-muted text-sm leading-relaxed mb-4">{{ internship.description|truncatewords:40 }}</p>
+
+        {# Responsibilities #}
+        {% if internship.responsibilities %}
+        <div class="mb-4">
+          <p class="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Key Responsibilities</p>
+          <p class="text-muted text-sm">{{ internship.responsibilities|truncatewords:30 }}</p>
+        </div>
+        {% endif %}
+
+        {# Skills #}
+        {% if internship.skills_required %}
+        <div class="mb-4">
+          <p class="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Skills Required</p>
+          <div class="flex flex-wrap gap-1.5">
+            {% for skill in internship.get_skills_list %}
+            <span class="bg-brand/10 border border-brand/20 text-brand text-xs font-medium px-2.5 py-0.5 rounded-full">{{ skill }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {# Perks #}
+        {% if internship.perks %}
+        <div class="mb-4">
+          <p class="text-xs font-semibold text-muted uppercase tracking-wider mb-2">Perks & Benefits</p>
+          <div class="flex flex-wrap gap-1.5">
+            {% for perk in internship.get_perks_list %}
+            <span class="bg-accent/10 border border-accent/20 text-accent text-xs font-medium px-2.5 py-0.5 rounded-full">{{ perk }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        {# Eligibility #}
+        <div class="bg-surface-3 border border-surface-4 rounded-xl p-3 mb-3">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs text-muted">
+            <div><span class="text-muted/60 uppercase tracking-wider">Age Range:</span> <span class="text-light font-medium ml-1">{{ internship.age_min }}–{{ internship.age_max }} years</span></div>
+            {% if internship.eligibility %}
+            <div class="md:col-span-2"><span class="text-muted/60 uppercase tracking-wider">Eligibility:</span> <span class="text-light font-medium ml-1">{{ internship.eligibility }}</span></div>
+            {% endif %}
+          </div>
+        </div>
+
+        {# Learning Outcomes #}
+        {% if internship.learning_outcomes %}
+        <div class="bg-brand/5 border border-brand/15 rounded-xl p-3 mb-4">
+          <p class="text-xs font-semibold text-brand mb-1">What You Will Learn</p>
+          <p class="text-xs text-muted">{{ internship.learning_outcomes }}</p>
+        </div>
+        {% endif %}
+
+        {# Footer #}
+        <div class="flex items-center justify-between pt-4 border-t border-surface-4 flex-wrap gap-2">
+          <div class="flex gap-3 text-xs text-muted flex-wrap">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              Mentor: {{ internship.mentor.full_name }}
+            </span>
+            {% if internship.contact_email %}
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              {{ internship.contact_email }}
+            </span>
+            {% endif %}
+          </div>
+          {% if not internship.id in applied_ids %}
+          <a href="{% url 'apply_internship' internship.pk %}" class="text-xs text-brand font-bold hover:text-light transition flex items-center gap-1">
+            Apply Now <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </a>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="text-center py-24">
+    <div class="w-20 h-20 rounded-2xl bg-surface-3 border border-surface-4 flex items-center justify-center mx-auto mb-5">
+      <svg class="w-9 h-9 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+    </div>
+    <h3 class="font-display font-bold text-white text-lg mb-2">No Internships Available</h3>
+    <p class="text-muted text-sm">Check back soon — new opportunities are added regularly by mentors.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

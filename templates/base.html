@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CareerAI — Smart Job Matching{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand:    '#4F8EF7',
+                        'brand-dark': '#2563EB',
+                        accent:   '#00D4B1',
+                        surface:  '#0f1117',
+                        'surface-2': '#161b27',
+                        'surface-3': '#1e2538',
+                        'surface-4': '#252d42',
+                        muted:    '#8892a4',
+                        light:    '#e8ecf4',
+                    },
+                    fontFamily: {
+                        display: ['Syne', 'sans-serif'],
+                        body:    ['DM Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glow-blue': '0 0 40px rgba(79,142,247,0.18)',
+                        'glow-teal': '0 0 30px rgba(0,212,177,0.15)',
+                        'card': '0 4px 24px rgba(0,0,0,0.35)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'DM Sans', sans-serif; }
+        h1,h2,h3,h4,h5,h6,.font-display { font-family: 'Syne', sans-serif; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #4F8EF7 0%, #00D4B1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .gradient-border {
+            background: linear-gradient(#161b27, #161b27) padding-box,
+                        linear-gradient(135deg, #4F8EF7, #00D4B1) border-box;
+            border: 1px solid transparent;
+        }
+        .hero-grid {
+            background-image: linear-gradient(rgba(79,142,247,0.04) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(79,142,247,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .glass-card {
+            background: rgba(30, 37, 56, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(79, 142, 247, 0.12);
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.2s;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, #4F8EF7, #00D4B1);
+            transition: width 0.25s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f1117; }
+        ::-webkit-scrollbar-thumb { background: #252d42; border-radius: 3px; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.55s ease both; }
+        .fade-up-2 { animation: fadeUp 0.55s 0.1s ease both; }
+        .fade-up-3 { animation: fadeUp 0.55s 0.2s ease both; }
+        .fade-up-4 { animation: fadeUp 0.55s 0.3s ease both; }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="bg-surface text-light min-h-screen flex flex-col">
+
+    <!-- Top accent line -->
+    <div class="h-0.5 w-full bg-gradient-to-r from-brand via-accent to-brand"></div>
+
+    <!-- Header -->
+    <header class="bg-surface-2 border-b border-surface-4 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-accent flex items-center justify-center shadow-glow-blue">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="font-display font-800 text-lg text-white tracking-tight">Career<span class="gradient-text">AI</span></span>
+                    <span class="block text-xs text-muted leading-none -mt-0.5">Intelligent Job Matching</span>
+                </div>
+            </a>
+
+            <!-- Nav injected per page -->
+            {% block header_nav %}{% endblock %}
+        </div>
+    </header>
+
+    <!-- Messages / Alerts -->
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-6 mt-5 w-full space-y-2">
+        {% for message in messages %}
+        <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium border fade-up
+            {% if message.tags == 'error' %}bg-red-950/60 border-red-700/40 text-red-300
+            {% elif message.tags == 'success' %}bg-emerald-950/60 border-emerald-600/40 text-emerald-300
+            {% else %}bg-brand/10 border-brand/30 text-blue-300{% endif %}">
+            {% if message.tags == 'error' %}
+                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+            {% elif message.tags == 'success' %}
+                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            {% else %}
+                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+            {% endif %}
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-2 border-t border-surface-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand to-accent flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-display font-700 text-sm text-white">CareerAI</p>
+                        <p class="text-muted text-xs">Intelligent Job Matching Platform</p>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <p class="text-muted text-xs">© 2025 CareerAI. All rights reserved.</p>
+                    <p class="text-muted/60 text-xs mt-0.5">AI-powered resume analysis & job prediction</p>
+                </div>
+                <div class="flex gap-4 text-xs text-muted">
+                    <a href="#" class="hover:text-light transition">Privacy</a>
+                    <a href="#" class="hover:text-light transition">Terms</a>
+                    <a href="#" class="hover:text-light transition">Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+
+    <div class="h-0.5 w-full bg-gradient-to-r from-brand via-accent to-brand"></div>
+</body>
+</html>

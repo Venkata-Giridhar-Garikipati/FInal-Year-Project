@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% block title %}Create Internship — CareerAI{% endblock %}
+
+{% block header_nav %}
+<div class="flex items-center gap-1 overflow-x-auto">
+  <a href="{% url 'mentor_dashboard' %}"   class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition bg-brand/15 text-brand border border-brand/25">Dashboard</a>
+  <a href="{% url 'create_internship' %}"  class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Create Internship</a>
+  <a href="{% url 'view_applications' %}"  class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Applications</a>
+  <a href="{% url 'create_class' %}"       class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Create Class</a>
+  <a href="{% url 'mentor_student_list' %}"       class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Student Chat</a>
+</div>
+<div class="flex items-center gap-3 ml-2 shrink-0">
+  <span class="hidden md:flex items-center gap-1.5 text-xs text-muted">
+    <span class="w-6 h-6 rounded-full bg-gradient-to-br from-accent to-brand flex items-center justify-center text-white text-xs font-bold">{{ request.user.full_name|first|upper }}</span>
+    {{ request.user.full_name }}
+  </span>
+  <a href="{% url 'mentor_logout' %}" class="px-3 py-1.5 text-xs font-semibold text-red-400 border border-red-900/50 rounded-lg hover:bg-red-950/40 transition whitespace-nowrap">Sign Out</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-6 py-8">
+
+  {# ——— Breadcrumb ——— #}
+  <div class="flex items-center gap-2 mb-2">
+    <a href="{% url 'mentor_dashboard' %}" class="text-muted hover:text-light text-xs transition flex items-center gap-1">
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      Dashboard
+    </a>
+    <svg class="w-3 h-3 text-surface-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+    <span class="text-muted text-xs">Create Internship</span>
+  </div>
+
+  <div class="glass-card rounded-2xl overflow-hidden fade-up">
+
+    {# Card Header #}
+    <div class="relative bg-gradient-to-br from-surface-3 to-surface-4 px-7 py-6 border-b border-surface-4 overflow-hidden">
+      <div class="absolute -top-6 -right-6 w-24 h-24 bg-brand/10 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="relative flex items-center gap-4">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand to-accent flex items-center justify-center shadow-glow-blue shrink-0">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        </div>
+        <div>
+          <h2 class="font-display font-bold text-white text-lg">Create New Internship</h2>
+          <p class="text-muted text-xs mt-0.5">Fields marked <span class="text-red-400 font-semibold">*</span> are required</p>
+        </div>
+      </div>
+    </div>
+
+    <form method="POST" class="p-7 space-y-8">
+      {% csrf_token %}
+
+      {# ── Section 1: Basic Information ── #}
+      <div>
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-6 h-6 rounded-lg bg-brand/15 border border-brand/20 flex items-center justify-center text-xs font-bold text-brand shrink-0">1</div>
+          <h3 class="font-display font-semibold text-white text-sm uppercase tracking-wider">Basic Information</h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div>
+            <label class="form-label">Internship Title <span class="text-red-400">*</span></label>
+            <input type="text" name="title" required value="{{ post.title|default:'' }}" placeholder="e.g. Software Development Intern"
+              class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Company / Organisation Name <span class="text-red-400">*</span></label>
+            <input type="text" name="company_name" required value="{{ post.company_name|default:'' }}" placeholder="e.g. TechCorp Pvt. Ltd."
+              class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Sector / Industry <span class="text-red-400">*</span></label>
+            <select name="sector" required class="form-input">
+              <option value="">— Select Sector —</option>
+              <option value="technology"  {% if post.sector == 'technology' %}selected{% endif %}>Technology & IT</option>
+              <option value="finance"     {% if post.sector == 'finance' %}selected{% endif %}>Finance & Banking</option>
+              <option value="marketing"   {% if post.sector == 'marketing' %}selected{% endif %}>Marketing & Sales</option>
+              <option value="engineering" {% if post.sector == 'engineering' %}selected{% endif %}>Engineering & Manufacturing</option>
+              <option value="healthcare"  {% if post.sector == 'healthcare' %}selected{% endif %}>Healthcare & Pharma</option>
+              <option value="education"   {% if post.sector == 'education' %}selected{% endif %}>Education & Training</option>
+              <option value="legal"       {% if post.sector == 'legal' %}selected{% endif %}>Legal & Compliance</option>
+              <option value="design"      {% if post.sector == 'design' %}selected{% endif %}>Design & Creative</option>
+              <option value="logistics"   {% if post.sector == 'logistics' %}selected{% endif %}>Logistics & Supply Chain</option>
+              <option value="agriculture" {% if post.sector == 'agriculture' %}selected{% endif %}>Agriculture & Rural Development</option>
+              <option value="other"       {% if post.sector == 'other' %}selected{% endif %}>Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Work Mode <span class="text-red-400">*</span></label>
+            <select name="mode" required class="form-input">
+              <option value="onsite" {% if post.mode == 'onsite' %}selected{% endif %}>On-Site</option>
+              <option value="remote" {% if post.mode == 'remote' %}selected{% endif %}>Remote</option>
+              <option value="hybrid" {% if post.mode == 'hybrid' %}selected{% endif %}>Hybrid</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="form-label">Location <span class="text-red-400">*</span></label>
+            <input type="text" name="location" required value="{{ post.location|default:'' }}" placeholder="e.g. New Delhi, Maharashtra / Pan India"
+              class="form-input">
+          </div>
+          <div class="md:col-span-2">
+            <label class="form-label">Internship Description <span class="text-red-400">*</span></label>
+            <textarea name="description" rows="4" required placeholder="Describe the internship role, work environment and overview..."
+              class="form-input resize-none">{{ post.description|default:'' }}</textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="form-label">Key Responsibilities</label>
+            <textarea name="responsibilities" rows="3" placeholder="List key day-to-day responsibilities of the intern..."
+              class="form-input resize-none">{{ post.responsibilities|default:'' }}</textarea>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="border-t border-surface-4"></div>
+
+      {# ── Section 2: Duration & Compensation ── #}
+      <div>
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-6 h-6 rounded-lg bg-brand/15 border border-brand/20 flex items-center justify-center text-xs font-bold text-brand shrink-0">2</div>
+          <h3 class="font-display font-semibold text-white text-sm uppercase tracking-wider">Duration & Compensation</h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+          <div>
+            <label class="form-label">Duration <span class="text-red-400">*</span></label>
+            <select name="duration" required class="form-input">
+              <option value="1"  {% if post.duration == '1' %}selected{% endif %}>1 Month</option>
+              <option value="2"  {% if post.duration == '2' %}selected{% endif %}>2 Months</option>
+              <option value="3"  {% if post.duration == '3' %}selected{% endif %}>3 Months</option>
+              <option value="6"  {% if post.duration == '6' %}selected{% endif %}>6 Months</option>
+              <option value="12" {% if post.duration == '12' %}selected{% endif %}>12 Months</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Monthly Stipend (₹) <span class="text-red-400">*</span></label>
+            <input type="number" name="stipend_amount" required min="0" value="{{ post.stipend_amount|default:'5000' }}" placeholder="5000"
+              class="form-input">
+          </div>
+          <div>
+            <label class="form-label">No. of Openings <span class="text-red-400">*</span></label>
+            <input type="number" name="openings" required min="1" value="{{ post.openings|default:'1' }}" placeholder="1"
+              class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Last Date to Apply</label>
+            <input type="date" name="last_date_to_apply" value="{{ post.last_date_to_apply|default:'' }}"
+              class="form-input">
+          </div>
+          <div class="md:col-span-2">
+            <label class="form-label">Perks & Benefits</label>
+            <input type="text" name="perks" value="{{ post.perks|default:'' }}" placeholder="e.g. Certificate, Letter of Recommendation, PPO, Flexible Hours"
+              class="form-input">
+          </div>
+
+        </div>
+      </div>
+
+      <div class="border-t border-surface-4"></div>
+
+      {# ── Section 3: Eligibility & Requirements ── #}
+      <div>
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-6 h-6 rounded-lg bg-brand/15 border border-brand/20 flex items-center justify-center text-xs font-bold text-brand shrink-0">3</div>
+          <h3 class="font-display font-semibold text-white text-sm uppercase tracking-wider">Eligibility & Requirements</h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div>
+            <label class="form-label">Minimum Qualification <span class="text-red-400">*</span></label>
+            <select name="qualification_required" required class="form-input">
+              <option value="">— Select Qualification —</option>
+              <option value="class10"       {% if post.qualification_required == 'class10' %}selected{% endif %}>Class 10 Pass</option>
+              <option value="class12"       {% if post.qualification_required == 'class12' %}selected{% endif %}>Class 12 Pass</option>
+              <option value="iti"           {% if post.qualification_required == 'iti' %}selected{% endif %}>ITI Certificate</option>
+              <option value="diploma"       {% if post.qualification_required == 'diploma' %}selected{% endif %}>Diploma</option>
+              <option value="graduate"      {% if post.qualification_required == 'graduate' %}selected{% endif %}>Graduate (Any Stream)</option>
+              <option value="btech"         {% if post.qualification_required == 'btech' %}selected{% endif %}>B.Tech / B.E.</option>
+              <option value="bsc"           {% if post.qualification_required == 'bsc' %}selected{% endif %}>B.Sc</option>
+              <option value="bcom"          {% if post.qualification_required == 'bcom' %}selected{% endif %}>B.Com</option>
+              <option value="ba"            {% if post.qualification_required == 'ba' %}selected{% endif %}>B.A.</option>
+              <option value="bca"           {% if post.qualification_required == 'bca' %}selected{% endif %}>BCA / BBA</option>
+              <option value="postgraduate"  {% if post.qualification_required == 'postgraduate' %}selected{% endif %}>Post Graduate</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Age Range <span class="text-red-400">*</span></label>
+            <div class="flex gap-2 items-center">
+              <input type="number" name="age_min" required min="15" max="40" value="{{ post.age_min|default:'18' }}" placeholder="Min" class="form-input">
+              <span class="text-muted text-sm shrink-0">to</span>
+              <input type="number" name="age_max" required min="15" max="40" value="{{ post.age_max|default:'25' }}" placeholder="Max" class="form-input">
+              <span class="text-muted text-xs whitespace-nowrap shrink-0">yrs</span>
+            </div>
+          </div>
+          <div class="md:col-span-2">
+            <label class="form-label">Skills Required <span class="text-red-400">*</span></label>
+            <input type="text" name="skills_required" required value="{{ post.skills_required|default:'' }}" placeholder="e.g. Python, MS Excel, Communication Skills, Teamwork"
+              class="form-input">
+            <p class="text-xs text-muted mt-1.5">Comma-separated list of required skills</p>
+          </div>
+          <div class="md:col-span-2">
+            <label class="form-label">Additional Eligibility Criteria</label>
+            <textarea name="eligibility" rows="2" placeholder="e.g. Must be currently enrolled, CGPA above 6.0..."
+              class="form-input resize-none">{{ post.eligibility|default:'' }}</textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="form-label">Learning Outcomes for Intern</label>
+            <textarea name="learning_outcomes" rows="2" placeholder="What will the intern gain? e.g. hands-on coding experience, client handling..."
+              class="form-input resize-none">{{ post.learning_outcomes|default:'' }}</textarea>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="border-t border-surface-4"></div>
+
+      {# ── Section 4: Contact Details ── #}
+      <div>
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-6 h-6 rounded-lg bg-brand/15 border border-brand/20 flex items-center justify-center text-xs font-bold text-brand shrink-0">4</div>
+          <h3 class="font-display font-semibold text-white text-sm uppercase tracking-wider">Contact Details <span class="text-muted font-normal normal-case">(Optional)</span></h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="form-label">Contact Email</label>
+            <input type="email" name="contact_email" value="{{ post.contact_email|default:'' }}" placeholder="hr@company.com"
+              class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Contact Phone</label>
+            <input type="text" name="contact_phone" value="{{ post.contact_phone|default:'' }}" placeholder="+91 98765 43210"
+              class="form-input">
+          </div>
+        </div>
+      </div>
+
+      {# ── Actions ── #}
+      <div class="flex gap-3 pt-2">
+        <a href="{% url 'mentor_dashboard' %}" class="flex-1 text-center bg-surface-3 border border-surface-4 text-muted font-semibold py-3 rounded-xl hover:text-light transition text-sm">
+          Cancel
+        </a>
+        <button type="submit" class="flex-1 bg-gradient-to-r from-brand to-brand-dark text-white font-bold py-3 rounded-xl hover:opacity-90 transition text-sm shadow-glow-blue flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          Create Internship
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<style>
+.form-label { @apply block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wider; }
+.form-input  { @apply w-full bg-surface-3 border border-surface-4 rounded-xl px-4 py-2.5 text-sm text-light placeholder-muted/40 focus:outline-none focus:border-brand/60 focus:ring-1 focus:ring-brand/30 transition; }
+select.form-input option { background: #1e2538; }
+</style>
+<style>
+
+/* ---------- LABEL ---------- */
+.form-label{
+  display:block;
+  font-size:11px;
+  font-weight:600;
+  color:#9aa4b2;
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+/* ---------- INPUTS ---------- */
+.form-input{
+  width:100%;
+  height:44px;
+  padding:0 14px;
+
+  background:#1e2538;          /* surface-3 */
+  color:#e6edf3;
+
+  border:1px solid #2b3550;     /* surface-4 */
+  border-radius:12px;
+
+  font-size:14px;
+  transition:all .2s ease;
+
+  outline:none;
+}
+
+/* textarea fix */
+textarea.form-input{
+  height:auto;
+  padding:12px 14px;
+  resize:none;
+}
+
+/* focus glow */
+.form-input:focus{
+  border-color:#3b82f6;
+  box-shadow:0 0 0 2px rgba(59,130,246,.25);
+  background:#1e2538;
+}
+
+/* placeholder */
+.form-input::placeholder{
+  color:#6b7280;
+}
+
+/* ---------- SELECT FIX ---------- */
+select.form-input{
+  appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+
+  background:#1e2538
+    url("data:image/svg+xml;utf8,<svg fill='%239aa4b2' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>")
+    no-repeat right 12px center;
+
+  background-size:16px;
+  padding-right:36px;
+}
+
+/* dropdown menu color */
+select.form-input option{
+  background:#1e2538;
+  color:#e6edf3;
+}
+
+/* ---------- NUMBER INPUT FIX ---------- */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{
+  opacity:.6;
+}
+
+/* ---------- DATE INPUT FIX ---------- */
+input[type="date"]{
+  color:#e6edf3;
+}
+
+/* ---------- SECTION SPACING ---------- */
+.grid{
+  row-gap:20px !important;
+}
+
+</style>
+{% endblock %}

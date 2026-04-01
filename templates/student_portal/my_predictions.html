@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block title %}Prediction History — CareerAI{% endblock %}
+
+{% block header_nav %}
+<div class="flex items-center gap-1 overflow-x-auto scrollbar-hide">
+  {% with active="dashboard" %}
+  <a href="{% url 'student_dashboard' %}"   class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition {% if active == 'dashboard' %}bg-brand/15 text-brand border border-brand/25{% else %}text-muted hover:text-light hover:bg-surface-3{% endif %}">Dashboard</a>
+  <a href="{% url 'prediction' %}"           class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Prediction</a>
+  <a href="{% url 'view_internships' %}"     class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Internships</a>
+  <a href="{% url 'application_status' %}"   class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Applications</a>
+  <a href="{% url 'learn_classes' %}"        class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Classes</a>
+  <a href="{% url 'my_profile' %}"           class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Profile</a>
+  <a href="{% url 'submit_feedback' %}"      class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Feedback</a>
+  <a href="{% url 'student_mentor_list' %}"      class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Mentor Chat</a>
+  <a href="{% url 'chatbot' %}"      class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Chatbot</a>
+  {% endwith %}
+</div>
+<div class="flex items-center gap-3 ml-2 shrink-0">
+  <span class="hidden md:flex items-center gap-1.5 text-xs text-muted">
+    <span class="w-6 h-6 rounded-full bg-gradient-to-br from-brand to-accent flex items-center justify-center text-white text-xs font-bold">{{ request.user.full_name|first|upper }}</span>
+    {{ request.user.full_name }}
+  </span>
+  <a href="{% url 'student_logout' %}" class="px-3 py-1.5 text-xs font-semibold text-red-400 border border-red-900/50 rounded-lg hover:bg-red-950/40 transition whitespace-nowrap">Sign Out</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-6 py-8">
+
+  {# ——— Breadcrumb ——— #}
+  <div class="flex items-center gap-2 mb-2">
+    <a href="{% url 'student_dashboard' %}" class="text-muted hover:text-light text-xs transition flex items-center gap-1">
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      Dashboard
+    </a>
+    <svg class="w-3 h-3 text-surface-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+    <span class="text-muted text-xs">Prediction History</span>
+  </div>
+  <div class="flex items-center justify-between mb-7 flex-wrap gap-3">
+    <div>
+      <h2 class="font-display font-extrabold text-2xl text-white">My Prediction History</h2>
+      <p class="text-muted text-sm mt-1">All your resume analysis results saved in one place</p>
+    </div>
+    <a href="{% url 'prediction' %}" class="inline-flex items-center gap-2 bg-gradient-to-r from-brand to-brand-dark text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition shadow-glow-blue">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+      New Prediction
+    </a>
+  </div>
+
+  {# ——— Predictions List ——— #}
+  {% if predictions %}
+  <div class="space-y-4 fade-up">
+    {% for pred in predictions %}
+    <div class="glass-card rounded-2xl overflow-hidden hover:border-brand/25 transition group">
+
+      {# Top strip — unique gradient per item based on rank #}
+      <div class="h-0.5 w-full bg-gradient-to-r from-brand to-accent opacity-40 group-hover:opacity-100 transition"></div>
+
+      <div class="p-5">
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+          {# Left: Info #}
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2.5 flex-wrap mb-1.5">
+              <h3 class="font-display font-bold text-white text-base">{{ pred.predicted_category }}</h3>
+              {% if pred.ml_used %}
+              <span class="inline-flex items-center gap-1 bg-accent/10 border border-accent/20 text-accent text-xs font-semibold px-2 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-accent"></span> ML Model
+              </span>
+              {% else %}
+              <span class="inline-flex items-center gap-1 bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-semibold px-2 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span> Keyword Fallback
+              </span>
+              {% endif %}
+            </div>
+            <p class="text-muted text-sm truncate mb-2">
+              <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              {{ pred.resume_filename }}
+            </p>
+            <div class="flex flex-wrap gap-4 text-xs text-muted">
+              <span class="flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                {{ pred.created_at|date:"d M Y, h:i A" }}
+              </span>
+              {% if pred.words_extracted %}
+              <span class="flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                {{ pred.words_extracted }} words
+              </span>
+              {% endif %}
+              {% if pred.confidence_score %}
+              <span class="flex items-center gap-1 text-accent">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                {{ pred.confidence_score|floatformat:1 }}% confidence
+              </span>
+              {% endif %}
+            </div>
+          </div>
+
+          {# Right: Actions #}
+          <div class="flex items-center gap-2 shrink-0">
+            <a href="{% url 'download_prediction' pred.id %}?format=csv"
+              class="inline-flex items-center gap-1.5 bg-surface-3 border border-surface-4 text-muted text-xs font-medium px-3 py-2 rounded-xl hover:border-accent/40 hover:text-accent transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              CSV
+            </a>
+            <a href="{% url 'download_prediction' pred.id %}?format=json"
+              class="inline-flex items-center gap-1.5 bg-surface-3 border border-surface-4 text-muted text-xs font-medium px-3 py-2 rounded-xl hover:border-brand/40 hover:text-brand transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              JSON
+            </a>
+            <a href="{% url 'prediction_detail' pred.id %}"
+              class="inline-flex items-center gap-1.5 bg-brand/10 border border-brand/25 text-brand text-xs font-semibold px-4 py-2 rounded-xl hover:bg-brand/20 transition">
+              View Report
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        {# Mini confidence bar #}
+        {% if pred.confidence_score %}
+        <div class="mt-4 flex items-center gap-3">
+          <span class="text-xs text-muted w-20 shrink-0">Confidence</span>
+          <div class="flex-1 bg-surface-4 rounded-full h-1">
+            <div class="bg-gradient-to-r from-brand to-accent rounded-full h-1" style="width: {{ pred.confidence_score }}%"></div>
+          </div>
+          <span class="text-xs text-accent font-semibold w-12 text-right shrink-0">{{ pred.confidence_score|floatformat:1 }}%</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  {# ——— Empty State ——— #}
+  <div class="text-center py-24 fade-up">
+    <div class="w-20 h-20 rounded-2xl bg-surface-3 border border-surface-4 flex items-center justify-center mx-auto mb-5">
+      <svg class="w-9 h-9 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2"/></svg>
+    </div>
+    <h3 class="font-display font-bold text-white text-lg mb-2">No Predictions Yet</h3>
+    <p class="text-muted text-sm mb-6 max-w-sm mx-auto">Upload your resume to get AI-powered job role predictions, skill gap analysis, and matched internships.</p>
+    <a href="{% url 'prediction' %}" class="inline-flex items-center gap-2 bg-gradient-to-r from-brand to-accent text-white font-semibold px-7 py-3 rounded-xl hover:opacity-90 transition shadow-glow-blue text-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+      Upload Resume & Get Started
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

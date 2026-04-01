@@ -1,0 +1,238 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Student Messages</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0f0a;
+    --surface: #0f1510;
+    --card: #141d14;
+    --card-hover: #1a261a;
+    --green: #22c55e;
+    --green-soft: rgba(34,197,94,0.08);
+    --green-glow: rgba(34,197,94,0.2);
+    --text: #e6ede6;
+    --muted: #5a7060;
+    --border: rgba(255,255,255,0.06);
+    --badge-bg: #16a34a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 15% 30%, rgba(34,197,94,0.04) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 70%, rgba(20,184,166,0.03) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .top-bar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 32px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; }
+  .brand span { color: var(--green); }
+  .role-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--green-soft); border: 1px solid rgba(34,197,94,0.2);
+    padding: 5px 14px 5px 8px; border-radius: 99px; font-size: 0.82rem;
+  }
+  .role-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+
+  .page-wrap { max-width: 780px; margin: 0 auto; padding: 40px 24px 60px; }
+  .page-header { margin-bottom: 36px; }
+  .page-header h1 {
+    font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; letter-spacing: -1px;
+  }
+  .page-header h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, #22c55e, #14b8a6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .page-header p { color: var(--muted); font-size: 0.93rem; margin-top: 8px; }
+
+  .stats-row { display: flex; gap: 12px; margin-bottom: 28px; }
+  .stat-chip {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 18px; flex: 1; text-align: center;
+  }
+  .stat-chip .num { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--green); }
+  .stat-chip .label { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+  .search-bar {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 0 16px; margin-bottom: 16px; transition: border-color 0.2s;
+  }
+  .search-bar:focus-within { border-color: rgba(34,197,94,0.35); }
+  .search-bar svg { color: var(--muted); flex-shrink: 0; }
+  .search-bar input {
+    flex: 1; background: none; border: none; outline: none; padding: 13px 0;
+    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+  }
+  .search-bar input::placeholder { color: var(--muted); }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--card); padding: 4px; border-radius: 10px; border: 1px solid var(--border); width: fit-content; }
+  .tab {
+    padding: 7px 18px; border-radius: 7px; font-size: 0.82rem; font-weight: 500; cursor: pointer;
+    color: var(--muted); transition: all 0.2s; border: none; background: none; font-family: 'DM Sans', sans-serif;
+  }
+  .tab.active { background: var(--green); color: #0a0f0a; font-weight: 600; }
+
+  .section-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .student-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .student-card {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 13px;
+    padding: 14px 18px; cursor: pointer; text-decoration: none; color: inherit;
+    transition: background 0.18s, border-color 0.18s, transform 0.15s; position: relative;
+  }
+  .student-card:hover { background: var(--card-hover); border-color: rgba(34,197,94,0.2); transform: translateX(3px); }
+  .student-card.has-unread { border-left: 3px solid var(--green); background: linear-gradient(135deg, var(--card), rgba(34,197,94,0.04)); }
+
+  .student-avatar {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, #15803d, #0d9488);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .student-info { flex: 1; min-width: 0; }
+  .student-info .name { font-family: 'Syne', sans-serif; font-size: 0.92rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .student-info .preview { font-size: 0.81rem; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .student-info .preview.unread-preview { color: var(--text); font-weight: 500; }
+
+  .student-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+  .student-meta .time { font-size: 0.73rem; color: var(--muted); }
+  .unread-badge {
+    background: var(--badge-bg); color: #fff; font-size: 0.72rem; font-weight: 700;
+    font-family: 'Syne', sans-serif; padding: 2px 7px; border-radius: 99px; min-width: 22px; text-align: center;
+    box-shadow: 0 0 12px var(--green-glow); animation: gpulse 2s ease-in-out infinite;
+  }
+  @keyframes gpulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(34,197,94,0.35); }
+    50%       { box-shadow: 0 0 18px rgba(34,197,94,0.6); }
+  }
+
+  .empty-state { text-align: center; padding: 60px 24px; color: var(--muted); font-size: 0.9rem; }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.3; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="brand">Intern<span>Connect</span> · Mentor</div>
+  <div class="role-pill">
+              <a href="{% url 'mentor_dashboard' %}" 
+   style="
+        display:inline-block;
+        padding:12px 24px;
+        font-size:16px;
+        font-weight:600;
+        text-decoration:none;
+        color:#ffffff;
+        background:linear-gradient(135deg,#1f1f1f,#2c2c2c);
+        border:1px solid #3a3a3a;
+        border-radius:8px;
+        box-shadow:0 4px 12px rgba(0,0,0,0.6);
+        transition:all 0.3s ease;
+   "
+   onmouseover="this.style.background='linear-gradient(135deg,#2c2c2c,#3a3a3a)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px rgba(0,0,0,0.8)';"
+   onmouseout="this.style.background='linear-gradient(135deg,#1f1f1f,#2c2c2c)';this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.6)';"
+>
+   Mentoe Dashboard
+</a>
+    <div class="dot"></div>
+    {{ request.user.full_name }}
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <h1>Student <em>Messages</em></h1>
+    <p>Guide and support your students through their internship journey.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-chip">
+      <div class="num">{{ students|length }}</div>
+      <div class="label">Total Students</div>
+    </div>
+    <div class="stat-chip">
+      <div class="num">{% with unread_total=0 %}{% for s in students %}{% if s.unread %}{{ s.unread }}{% endif %}{% endfor %}{% endwith %}
+        {% regroup students by unread as grouped %}
+        {{students|length}}
+      </div>
+      <div class="label">Conversations</div>
+    </div>
+    <div class="stat-chip">
+      <div class="num" id="unreadCount">
+        {% with total=0 %}
+          {% for s in students %}{% if s.unread %}•{% endif %}{% endfor %}
+        {% endwith %}
+      </div>
+      <div class="label">Unread Threads</div>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Search students…"/>
+  </div>
+
+  <div class="section-label">{{ students|length }} students</div>
+
+  <div class="student-list" id="studentList">
+    {% for item in students %}
+    <a href="{% url 'mentor_chat' item.user.id %}" class="student-card {% if item.unread %}has-unread{% endif %}" data-name="{{ item.user.full_name|lower }}">
+      <div class="student-avatar">{{ item.user.full_name|slice:":1"|upper }}</div>
+      <div class="student-info">
+        <div class="name">{{ item.user.full_name }}</div>
+        <div class="preview {% if item.unread %}unread-preview{% endif %}">
+          {% if item.last_message %}
+            {% if item.last_message.sender == request.user %}You: {% endif %}{{ item.last_message.content|truncatechars:52 }}
+          {% else %}No messages yet{% endif %}
+        </div>
+      </div>
+      <div class="student-meta">
+        {% if item.last_message %}
+        <span class="time">{{ item.last_message.created_at|timesince|truncatewords:2 }} ago</span>
+        {% endif %}
+        {% if item.unread %}
+        <span class="unread-badge">{{ item.unread }}</span>
+        {% endif %}
+      </div>
+    </a>
+    {% empty %}
+    <div class="empty-state">
+      <div class="icon">👩‍🎓</div>
+      <p>No students assigned yet.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  // Count unread threads
+  const badges = document.querySelectorAll('.unread-badge');
+  document.getElementById('unreadCount').textContent = badges.length || '0';
+
+  document.getElementById('searchInput').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('.student-card').forEach(c => {
+      c.style.display = c.dataset.name.includes(q) ? '' : 'none';
+    });
+  });
+</script>
+</body>
+</html>

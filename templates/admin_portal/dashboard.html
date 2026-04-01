@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — CareerAI{% endblock %}
+
+{% block header_nav %}
+<div class="flex items-center gap-1 overflow-x-auto">
+  <a href="{% url 'admin_dashboard' %}" class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition bg-brand/15 text-brand border border-brand/25">Dashboard</a>
+  <a href="{% url 'add_mentor' %}"      class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Add Mentor</a>
+  <a href="{% url 'admin_feedback' %}"  class="px-3 py-1.5 text-sm font-medium rounded-lg whitespace-nowrap transition text-muted hover:text-light hover:bg-surface-3">Feedback</a>
+</div>
+<div class="flex items-center gap-3 ml-2 shrink-0">
+  <span class="hidden md:flex items-center gap-1.5 text-xs text-muted">
+    <span class="w-6 h-6 rounded-full bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center text-white text-xs font-bold">{{ request.user.full_name|first|upper }}</span>
+    {{ request.user.full_name }}
+  </span>
+  <a href="{% url 'admin_logout' %}" class="px-3 py-1.5 text-xs font-semibold text-red-400 border border-red-900/50 rounded-lg hover:bg-red-950/40 transition whitespace-nowrap">Sign Out</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-6 py-8">
+
+  {# ——— Welcome Hero ——— #}
+  <div class="relative bg-gradient-to-br from-surface-3 via-surface-2 to-surface-3 border border-surface-4 rounded-2xl p-7 mb-7 overflow-hidden fade-up">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-brand/6 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-1/3 w-48 h-48 bg-accent/4 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="relative flex items-center justify-between flex-wrap gap-5">
+      <div>
+        <p class="text-muted text-xs uppercase tracking-widest mb-1">Logged in as Administrator</p>
+        <h2 class="font-display font-extrabold text-3xl text-white">{{ request.user.full_name }}</h2>
+        <p class="text-muted text-sm mt-1">Platform Management — CareerAI</p>
+        <div class="flex gap-2 mt-4 flex-wrap">
+          <span class="inline-flex items-center gap-1.5 bg-brand/15 border border-brand/25 text-brand text-xs font-semibold px-3 py-1 rounded-full">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Administrator
+          </span>
+        </div>
+      </div>
+      <div class="hidden md:flex w-20 h-20 rounded-2xl bg-gradient-to-br from-brand to-brand-dark items-center justify-center text-white text-4xl font-display font-extrabold shadow-glow-blue">
+        {{ request.user.full_name|first|upper }}
+      </div>
+    </div>
+  </div>
+
+  {# ——— Stats Cards ——— #}
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-7">
+    <div class="glass-card rounded-2xl p-6 flex items-center gap-5 fade-up">
+      <div class="w-14 h-14 rounded-xl bg-brand/15 border border-brand/20 flex items-center justify-center shrink-0">
+        <svg class="w-7 h-7 text-brand" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+      </div>
+      <div>
+        <p class="text-muted text-xs uppercase tracking-wider mb-1">Total Students</p>
+        <p class="font-display font-extrabold text-3xl text-white">{{ total_students }}</p>
+        <p class="text-muted/60 text-xs mt-0.5">Registered on platform</p>
+      </div>
+    </div>
+    <div class="glass-card rounded-2xl p-6 flex items-center gap-5 fade-up-2">
+      <div class="w-14 h-14 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
+        <svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </div>
+      <div>
+        <p class="text-muted text-xs uppercase tracking-wider mb-1">Total Mentors</p>
+        <p class="font-display font-extrabold text-3xl text-white">{{ total_mentors }}</p>
+        <p class="text-muted/60 text-xs mt-0.5">Active mentors</p>
+      </div>
+    </div>
+  </div>
+
+  {# ——— Add Mentor CTA ——— #}
+  <div class="flex justify-end mb-5">
+    <a href="{% url 'add_mentor' %}" class="inline-flex items-center gap-2 bg-gradient-to-r from-brand to-brand-dark text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition text-sm shadow-glow-blue">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+      Add New Mentor
+    </a>
+  </div>
+
+  {# ——— Students Table ——— #}
+  <div class="glass-card rounded-2xl overflow-hidden mb-5 fade-up-2">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-surface-4">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg bg-brand/15 border border-brand/20 flex items-center justify-center">
+          <svg class="w-4 h-4 text-brand" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
+        </div>
+        <h3 class="font-display font-semibold text-white text-sm">Registered Students</h3>
+      </div>
+      <span class="bg-brand/15 border border-brand/25 text-brand text-xs font-bold px-2.5 py-0.5 rounded-full">{{ total_students }}</span>
+    </div>
+    <div class="overflow-x-auto">
+      {% if students %}
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-surface-4 bg-surface-3/40">
+            <th class="px-6 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">#</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Full Name</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Email</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Registered On</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-surface-4">
+          {% for student in students %}
+          <tr class="hover:bg-surface-3/40 transition">
+            <td class="px-6 py-3.5 text-muted text-xs">{{ forloop.counter }}</td>
+            <td class="px-6 py-3.5">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-brand/15 border border-brand/20 flex items-center justify-center text-xs font-bold text-brand shrink-0">{{ student.full_name|first|upper }}</div>
+                <span class="font-medium text-light text-sm">{{ student.full_name }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-3.5 text-muted text-xs">{{ student.email }}</td>
+            <td class="px-6 py-3.5 text-muted text-xs">{{ student.date_joined|date:"d M Y" }}</td>
+            <td class="px-6 py-3.5">
+              <span class="inline-flex items-center gap-1 bg-accent/10 border border-accent/20 text-accent text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-accent pulse-dot"></span> Active
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="text-center py-14">
+        <div class="w-14 h-14 rounded-xl bg-surface-3 border border-surface-4 flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
+        </div>
+        <p class="text-muted text-sm">No students registered yet.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ——— Mentors Table ——— #}
+  <div class="glass-card rounded-2xl overflow-hidden fade-up-3">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-surface-4">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center">
+          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </div>
+        <h3 class="font-display font-semibold text-white text-sm">Registered Mentors</h3>
+      </div>
+      <span class="bg-accent/10 border border-accent/20 text-accent text-xs font-bold px-2.5 py-0.5 rounded-full">{{ total_mentors }}</span>
+    </div>
+    <div class="overflow-x-auto">
+      {% if mentors %}
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-surface-4 bg-surface-3/40">
+            <th class="px-6 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">#</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Full Name</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Email</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Added On</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-muted uppercase tracking-wider">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-surface-4">
+          {% for mentor in mentors %}
+          <tr class="hover:bg-surface-3/40 transition">
+            <td class="px-6 py-3.5 text-muted text-xs">{{ forloop.counter }}</td>
+            <td class="px-6 py-3.5">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center text-xs font-bold text-accent shrink-0">{{ mentor.full_name|first|upper }}</div>
+                <span class="font-medium text-light text-sm">{{ mentor.full_name }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-3.5 text-muted text-xs">{{ mentor.email }}</td>
+            <td class="px-6 py-3.5 text-muted text-xs">{{ mentor.date_joined|date:"d M Y" }}</td>
+            <td class="px-6 py-3.5">
+              <span class="inline-flex items-center gap-1 bg-accent/10 border border-accent/20 text-accent text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-accent pulse-dot"></span> Active
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="text-center py-14">
+        <div class="w-14 h-14 rounded-xl bg-surface-3 border border-surface-4 flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </div>
+        <p class="text-muted text-sm mb-3">No mentors added yet.</p>
+        <a href="{% url 'add_mentor' %}" class="inline-flex items-center gap-1.5 text-brand text-xs hover:text-light transition">
+          Add a Mentor <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

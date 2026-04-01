@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}Mentor Login — CareerAI{% endblock %}
+
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center px-6 py-14">
+
+  <div class="w-full max-w-md">
+
+    <!-- Glass Card -->
+    <div class="glass-card rounded-2xl overflow-hidden fade-up">
+
+      <!-- Header -->
+      <div class="relative bg-gradient-to-br from-surface-3 to-surface-4 px-8 py-7 border-b border-surface-4 text-center">
+
+        <div class="absolute -top-6 -right-6 w-24 h-24 bg-brand/10 rounded-full blur-2xl"></div>
+
+        <div class="relative flex flex-col items-center">
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-brand to-accent flex items-center justify-center shadow-glow-blue mb-3">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M5.121 17.804A9 9 0 1118.88 6.196M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+
+          <h2 class="font-display font-bold text-white text-xl">
+            Mentor Login
+          </h2>
+
+          <p class="text-muted text-xs mt-1">
+            Access your CareerAI mentor dashboard
+          </p>
+        </div>
+      </div>
+
+
+      <!-- Form Area -->
+      <div class="px-8 py-8">
+
+        <!-- Info Banner -->
+        <div class="bg-brand/5 border border-brand/20 rounded-xl p-4 mb-6 text-xs text-muted leading-relaxed">
+          <span class="text-brand font-semibold">Note:</span>
+          Mentor accounts are created by the administrator.  
+          Contact admin if you don't have access.
+        </div>
+
+
+        <form method="POST" novalidate class="space-y-5">
+          {% csrf_token %}
+
+          <!-- Email -->
+          <div>
+            <label class="form-label">Email Address *</label>
+            <input type="email"
+                   name="email"
+                   required
+                   value="{{ request.POST.email }}"
+                   placeholder="Enter your email"
+                   class="form-input">
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label class="form-label">Password *</label>
+            <input type="password"
+                   name="password"
+                   required
+                   placeholder="Enter your password"
+                   class="form-input">
+          </div>
+
+          <!-- Submit -->
+          <button type="submit"
+            class="w-full bg-gradient-to-r from-brand to-accent
+                   text-white font-bold py-3 rounded-xl
+                   hover:opacity-90 transition
+                   shadow-glow-blue text-sm
+                   flex items-center justify-center gap-2">
+
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5"
+                 viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M5 13l4 4L19 7"/>
+            </svg>
+
+            Login to Mentor Portal
+          </button>
+
+        </form>
+
+
+        <!-- Footer Links -->
+        <div class="border-t border-surface-4 mt-7 pt-5 text-center text-xs">
+
+          <div class="flex justify-center gap-4 text-muted">
+            <a href="{% url 'student_login' %}"
+               class="hover:text-light transition font-medium">
+               Student Portal
+            </a>
+
+            <span class="text-surface-4">|</span>
+
+            <a href="{% url 'admin_login' %}"
+               class="hover:text-light transition font-medium">
+               Admin Portal
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Back Link -->
+    <div class="text-center mt-5">
+      <a href="{% url 'home' %}"
+         class="text-xs text-muted hover:text-light transition">
+         ← Back to Home
+      </a>
+    </div>
+
+  </div>
+</div>
+<style>
+.form-label{
+  display:block;
+  font-size:11px;
+  font-weight:600;
+  color:#9aa4b2;
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.form-input{
+  width:100%;
+  height:44px;
+  padding:0 14px;
+  background:#1e2538;
+  color:#e6edf3;
+  border:1px solid #2b3550;
+  border-radius:12px;
+  font-size:14px;
+  outline:none;
+  transition:.2s;
+}
+
+.form-input:focus{
+  border-color:#3b82f6;
+  box-shadow:0 0 0 2px rgba(59,130,246,.25);
+}
+</style>
+{% endblock %}
